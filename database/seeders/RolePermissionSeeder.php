@@ -33,7 +33,7 @@ class RolePermissionSeeder extends Seeder
         $jobseeker->syncPermissions(['apply for jobs','view own applications']);
 
         // Optional: Assign default roles to existing users
-        User::where('email','admin@example.com')->first()?->assignRole($admin);
+        User::where('email','admin@hireme.com')->first()?->assignRole($admin);
         User::where('email','employee@example.com')->first()?->assignRole($employee);
 
         // All other users default to jobseeker

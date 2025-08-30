@@ -75,9 +75,23 @@ php artisan serve
 - **jobseeker**
   - Can view jobs and apply (may need to pay when application fee is enabled).
 
+## If You want  Create Admin/Employee/JobSekeer   
+  {
+    "name": "**",
+    "email": "***",
+    "password": "****",
+    "password_confirmation": "***",
+   
+}  
+
 Seeded admin credentials (from seeder):
 - Email: `admin@hireme.com`
-- Password: `password123` (change after first login)
+- Password: `password123`
+
+
+Seeded employee credentials (from seeder)::(Create Employee role use this email),
+- Email: `employee@example.com`
+
 
 ---
 
@@ -132,7 +146,7 @@ Seeded admin credentials (from seeder):
 ---
 
 ## Postman
-- Import `postman_collection.json` (included with this deliverable).
+- Import `postman_collection.json`.
 - The collection contains example requests for:
   - Auth register/login
   - Authenticated endpoints (requires Bearer token)
@@ -155,9 +169,11 @@ I reviewed the repository structure and `routes/api.php` to map endpoints and co
 
 ---
 
-## License
-MIT (or choose your preferred license).
+##  Databases
+This project includes a pre-built database dump file for easy setup.  
+The SQL file is located at: **databases/New Project 20250831.sql**
+You can import this file directly into your MySQL database to get all the required tables, data, and roles **without** running migrations manually.
 
----
 
-If you'd like, I prepared the `README.md` and a `postman_collection.json` for direct download below.
+
+

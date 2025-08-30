@@ -13,22 +13,6 @@ use Carbon\Carbon;
 
 class Company_AnalyticsController extends Controller
 {
-
-   <?php
-
-namespace App\Http\Controllers\Api\Analytics;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Invoice\Invoice;
-use App\Models\Job\Job;
-use App\Models\Application\Application;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-
-class Company_AnalyticsController extends Controller
-{
     public function index()
     {
         try {
