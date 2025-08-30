@@ -1,61 +1,163 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Job-Posting-Platform
 
-## About Laravel
+**Public repo:** https://github.com/didar044/Job-Posting-Platform
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Overview
+A Laravel-based job posting platform with role-based access control (Admin, Employee, Jobseeker), job posting, applications, and Stripe payment integration for paid job applications.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Deliverables (Included)
+- Clean code in this GitHub repository.
+- This `README.md` with setup, API endpoints, roles, and payment flow.
+- Postman collection (`postman_collection.json`) with example requests (import into Postman).
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Setup (Local)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. Clone the repo
+```bash
+git clone https://github.com/didar044/Job-Posting-Platform.git
+cd Job-Posting-Platform
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. Install PHP dependencies
+```bash
+composer install
+npm install
+npm run build   # or npm run dev for development
+```
 
-## Laravel Sponsors
+3. Copy and configure `.env`
+```bash
+cp .env.example .env
+# Edit .env and set DB and Stripe credentials:
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=hireme
+# DB_USERNAME=root
+# DB_PASSWORD=
+# STRIPE_KEY=pk_test_xxx
+# STRIPE_SECRET=sk_test_xxx
+# DB_TABLE_PREFIX=hm_   # if you use prefixed table names
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+4. Generate app key & run migrations
+```bash
+php artisan key:generate
+php artisan migrate
+php artisan db:seed --class=AdminUserSeeder
+```
 
-### Premium Partners
+5. Serve
+```bash
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## Important files & notes
+- `database/seeders/AdminUserSeeder.php` — creates a default admin user (`admin@hireme.com`).
+- `routes/api.php` — main API routes and role-protected groups.
+- Authentication uses JWT / token-based middleware (`auth:api` in routes). Ensure your `config/auth.php` and guard are configured to use the API driver you expect (JWT or Passport).
+- Stripe webhook route is located at `/api/applications/stripe/webhook` (used by both admins and jobseekers in this project as configured).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Roles & Permissions
+- **admin**
+  - Full access to users, jobs, applications, analytics.
+- **employee**
+  - CRUD access to jobs and manage candidate applications (accept / reject).
+- **jobseeker**
+  - Can view jobs and apply (may need to pay when application fee is enabled).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Seeded admin credentials (from seeder):
+- Email: `admin@hireme.com`
+- Password: `password123` (change after first login)
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## API Endpoints (summary)
+
+### Auth (public)
+- `POST /api/auth/register` — register user (role assignment may be manual in DB or via admin).
+- `POST /api/auth/login` — login, returns token.
+
+### Auth (protected)
+- `POST /api/auth/logout` — revoke token.
+- `POST /api/auth/refresh` — refresh token.
+- `POST /api/auth/me` — current user info.
+
+### Users (admin only)
+- `GET /api/users` — list users
+- `POST /api/users` — create user
+- `GET /api/users/{id}` — show user
+- `PUT/PATCH /api/users/{id}` — update user
+- `DELETE /api/users/{id}` — delete user
+
+### Jobs
+- `GET /api/jobs` — public list of jobs
+- (admin/employee) `POST /api/jobs` — create job
+- (admin/employee) `GET /api/jobs/{id}` — show job
+- (admin/employee) `PUT /api/jobs/{id}` — update job
+- (admin/employee) `DELETE /api/jobs/{id}` — delete job
+
+### Applications
+- `POST /api/applications` — submit an application (may trigger Stripe payment flow)
+- `GET /api/applications` — list applications (admin/employee)
+- `GET /api/applications/{id}` — application details
+- `PATCH /api/applications/{id}/status` — update application status (accept/reject) — employee
+- `POST /api/applications/stripe/webhook` — Stripe webhook endpoint (no auth)
+
+### Analytics
+- `GET /api/analytics/company` — company analytics (admin)
+
+---
+
+## Payment Flow (Stripe) — high level
+1. Jobseeker starts an application that requires a fee.
+2. Server creates a Stripe Checkout session or PaymentIntent with metadata linking to the application (application_id).
+3. Frontend redirects the user to Stripe Checkout (or uses Stripe Elements).
+4. On successful payment, Stripe hits `/api/applications/stripe/webhook` with the event (e.g., `checkout.session.completed` or `payment_intent.succeeded`).
+5. Webhook handler validates event signature, finds the `application_id` in metadata, and marks the application as paid/complete in DB.
+
+**Important**
+- Use `STRIPE_SECRET` and `STRIPE_WEBHOOK_SECRET` in `.env`.
+- When testing locally, use `stripe CLI` to forward webhooks or deploy webhook publicly.
+
+---
+
+## Postman
+- Import `postman_collection.json` (included with this deliverable).
+- The collection contains example requests for:
+  - Auth register/login
+  - Authenticated endpoints (requires Bearer token)
+  - Jobs CRUD
+  - Applications create / status update
+  - Stripe webhook (example raw webhook payload)
+
+---
+
+## How I validated the repo
+I reviewed the repository structure and `routes/api.php` to map endpoints and confirmed a seeder `AdminUserSeeder.php` exists to create an admin user.
+
+---
+
+## Next steps / recommendations
+- Rotate the seeded admin password and secure `.env`.
+- Add a proper Roles & Permissions package like [spatie/laravel-permission] and ensure role checks are centralized.
+- Add Postman environment variables (base URL, bearer token) for easier importing.
+- Add unit/feature tests for auth, jobs, applications, and payment webhook.
+
+---
 
 ## License
+MIT (or choose your preferred license).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+If you'd like, I prepared the `README.md` and a `postman_collection.json` for direct download below.
